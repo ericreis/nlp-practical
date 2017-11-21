@@ -1,18 +1,25 @@
 #include "function.h"
 
-Function::Function(double x1, double x2, double x3) {
-    this->x1 = x1;
-    this->x2 = x2;
-    this->x3 = x3;
+Function::Function() { }
+
+Function::~Function() { }
+
+double Function::evaluate(std::vector<double>& x) {
+    // return std::pow(x[0], 3.0) + std::pow(x[0], 2.0) * x[1] + 
+    //        x[0] * std::pow(x[1], 2.0) + std::pow(x[1], 3.0) +
+    //        x[0] * x[1] * x[2] + std::pow(x[2], 3.0) + 
+    //        x[1] * std::pow(x[2], 2.0);
+
+    return 0.5 * std::pow((x[0] - 2), 2.0) + std::pow((x[1] - 1), 2);
 }
 
-Function::~Function() {
-    
-}
+std::vector<double> Function::evaluateFirstDerivative(std::vector<double>& x) {
+    double d_dx1 = x[0] - 2;
+    double d_dx2 = 2 * x[1] - 2;
 
-double Function::evaluate() {
-    return std::pow(this->x1, 3.0) + std::pow(this->x1, 2.0) * this->x2 + 
-           this->x1 * std::pow(this->x2, 2.0) + std::pow(this->x2, 3.0) +
-           this->x1 * this->x2 * this->x3 + std::pow(this->x3, 3.0) + 
-           this->x2 * std::pow(x3, 2.0);
+    std::vector<double> v;
+    v.push_back(d_dx1);
+    v.push_back(d_dx2);
+
+    return v;
 }

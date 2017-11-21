@@ -1,10 +1,10 @@
 #include <cmath>
+#include <vector>
 
 class Function {
-private:
-    double x1, x2, x3;
 public:
-    Function(double x1, double x2, double x3);
+    Function();
     ~Function();
-    double evaluate();
+    double evaluate(std::vector<double>& x);
+    std::vector<double> evaluateFirstDerivative(std::vector<double>& x);
 };
