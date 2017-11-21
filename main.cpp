@@ -59,14 +59,18 @@ int main(int argc, const char* argv[]) {
     Function f;
     std::vector<double> x;
     x.push_back(1);
-    x.push_back(0);
-    // x.push_back(1);
+    x.push_back(1);
+    x.push_back(2);
     std::vector<double> d;
     d.push_back(3);
     d.push_back(1);
     // d.push_back(1);
-    std::cout << armijo(x, d, 0.8, 0.25, f) << std::endl;
+    // std::cout << armijo(x, d, 0.8, 0.25, f) << std::endl;
     // std::cout << f.evaluate(x) << std::endl;
+    std::vector<double> gradf = f.evaluateFirstDerivative(x);
+    for (int i = 0; i < gradf.size(); i++) {
+        std::cout << gradf[i] << std::endl;
+    }
     return 0;
 }
 
