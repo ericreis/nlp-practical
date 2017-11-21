@@ -5,7 +5,7 @@ Function::Function() { }
 Function::~Function() { }
 
 double Function::evaluate(std::vector<double>& x) {
-    double p = 1.0;
+    double p = 1000.0;
     return std::pow(x[0], 3.0) + std::pow(x[0], 2.0) * x[1] + 
            x[0] * std::pow(x[1], 2.0) + std::pow(x[1], 3.0) +
            x[0] * x[1] * x[2] + std::pow(x[2], 3.0) + 
@@ -17,7 +17,7 @@ double Function::evaluate(std::vector<double>& x) {
 }
 
 std::vector<double> Function::evaluateFirstDerivative(std::vector<double>& x) {
-    double p = 1;
+    double p = 1000.0;
     
     double d_dx1 = 4.0 * x[0] * p * (std::pow(x[0], 2.0) + std::pow(x[1], 2.0) + 
                                      std::pow(x[2], 2.0) - 1) + 

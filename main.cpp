@@ -11,6 +11,14 @@ std::vector<Type> operator+(std::vector<Type> x, const std::vector<Type> &y) {
     return x;
 }
 
+// sum of two vectors (+=)
+template<class Type>
+void operator+=(std::vector<Type> &x, const std::vector<Type> &y) {
+    for (int i = 0, sz = x.size(); i < sz; i++) {
+        x[i] += y[i];
+    }
+}
+
 // product between a vector and a scalar
 template<class Type>
 std::vector<Type> operator*(std::vector<Type> x, const Type &y) {
@@ -30,8 +38,27 @@ Type operator*(std::vector<Type> &x, const std::vector<Type> &y) {
     return inner_product;
 }
 
-double armijo(std::vector<double> x_, std::vector<double> d, 
-              double gamma, double eta, Function& f) {
+// inequality between vector and scalar
+template<class Type>
+bool operator!=(const std::vector<double> &x, const Type &y) {
+    for (int i = 0, sz = x.size(); i < sz; i++) {
+        if (x[i] != y) return 1;
+    }
+    return 0;
+}
+
+// negative of vector
+template<class Type>
+std::vector<Type> operator-(const std::vector<Type> &y) {
+    std::vector<Type> x(y.size());
+    for (int i = 0, sz = x.size(); i < sz; i++) {
+        x[i] = -y[i];
+    }
+    return x;
+}
+
+double armijo(std::vector<double> x_, std::vector<double> &d, 
+              double gamma, double eta, Function &f) {
     if (gamma <= 0 || gamma >= 1) {
         std::cout << "Gamma must be in (0,1)" << std::endl;
     }
@@ -55,22 +82,40 @@ double armijo(std::vector<double> x_, std::vector<double> d,
     return t;
 }
 
-int main(int argc, const char* argv[]) {
+bool gradient_has_converged(std::vector<double> &gradf, double tol=1e-5) {
+    for (int i = 0, sz = gradf.size(); i < sz; i++) {
+        // std::cout << (gradf[i] > tol || gradf[i] < -tol) << std::endl;
+        if (gradf[i] > tol || gradf[i] < -tol) return 0;
+    }
+    return 1;
+}
+
+std::vector<double> gradient(std::vector<double> x, Function &f) {
+    int it_count = 0;
+    std::vector<double> gradf = f.evaluateFirstDerivative(x);
+    while (!gradient_has_converged(gradf)) {
+        std::vector<double> d = -f.evaluateFirstDerivative(x);
+        double t = armijo(x, d, 0.8, 0.25, f);
+        x += d * t;
+        gradf = f.evaluateFirstDerivative(x);
+        it_count++;
+    }
+    std::cout << "GRADIENT iterarions = " << it_count << std::endl;
+    return x;
+}
+
+int main(int argc, const char *argv[]) {
     Function f;
     std::vector<double> x;
     x.push_back(1);
     x.push_back(1);
-    x.push_back(2);
-    std::vector<double> d;
-    d.push_back(3);
-    d.push_back(1);
-    // d.push_back(1);
-    // std::cout << armijo(x, d, 0.8, 0.25, f) << std::endl;
-    // std::cout << f.evaluate(x) << std::endl;
-    std::vector<double> gradf = f.evaluateFirstDerivative(x);
-    for (int i = 0; i < gradf.size(); i++) {
-        std::cout << gradf[i] << std::endl;
+    x.push_back(1);
+    std::vector<double> x_opt = gradient(x, f);
+    std::cout << "x_opt = [";
+    for (int i = 0; i< x_opt.size(); i++) {
+        std::cout << x_opt[i] << " ";
     }
+    std::cout << "]" << std::endl;
     return 0;
 }
 
