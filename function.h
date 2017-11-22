@@ -5,6 +5,7 @@ class Function {
 public:
     Function();
     ~Function();
-    double evaluate(std::vector<double>& x);
-    std::vector<double> evaluateFirstDerivative(std::vector<double>& x);
+    double evaluate(std::vector<double>& x, double p);
+    std::vector<double> evaluateFirstDerivative(std::vector<double>& x, 
+                                                double p);
 };
