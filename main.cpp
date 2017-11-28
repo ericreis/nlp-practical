@@ -1,4 +1,6 @@
 #include <iostream>
+#include <sstream> 
+#include <string>
 
 #include "function.h"
 
@@ -69,10 +71,7 @@ std::ostream& operator<<(std::ostream& os, const std::vector<Type>& v) {
 
 double armijo(std::vector<double> x_, std::vector<double>& d, double gamma,
               double eta, double p, Function &f) {
-    if (gamma <= 0 || gamma >= 1) {
-        std::cout << "Gamma must be in (0,1)" << std::endl;
-    }
-    if (eta <= 0 || eta >= 1) {
+    if (eta < 0 || eta > 1) {
         std::cout << "Eta must be in (0,1)" << std::endl;
     }
 
@@ -86,15 +85,12 @@ double armijo(std::vector<double> x_, std::vector<double>& d, double gamma,
         v = x_ + (d * t);
         it_count++;
     }
-
     // std::cout << "ARMIJO iterations = " << it_count << std::endl;
-
     return t;
 }
 
 bool gradient_has_converged(std::vector<double>& gradf, double tol=1e-5) {
     for (int i = 0, sz = gradf.size(); i < sz; i++) {
-        // std::cout << (gradf[i] > tol || gradf[i] < -tol) << std::endl;
         if (gradf[i] > tol || gradf[i] < -tol) return 0;
     }
     return 1;
@@ -150,20 +146,44 @@ std::vector<double> external_penalty(std::vector<double> x, double& p, Function&
     return x;
 }
 
+static void show_usage(std::string name) {
+    std::cerr << "Usage: " << name << " <option(s)>\n\n"
+              << "Options:\n"
+              << "\t-h,--help\t\tShow this help message\n"
+              << "\t-x0,--initialx\t\tInitial point x (R3) for the iterative algorithms\n"
+              << "\t-p0,--initialp\t\tInitial weight for the external penalty algorithm\n"
+              << std::endl;
+}
+
 int main(int argc, const char* argv[]) {
-    Function f;
-    std::vector<double> x;
-    x.push_back(1);
-    x.push_back(1);
-    x.push_back(1);
-    double p = 1;
-    std::vector<double> x_opt = external_penalty(x, p, f, gradient);
-    std::cout << "x_opt = [";
-    for (int i = 0; i< x_opt.size(); i++) {
-        std::cout << x_opt[i] << " ";
+    if (argc < 2) {
+        show_usage(argv[0]);
+        return 1;
     }
-    std::cout << "]" << std::endl;
-    std::cout << "f(x_opt) = " << f.evaluate(x_opt, p) << std::endl;
+    std::vector<double> x0;
+    double p0;
+    for (int i = 1; i < argc; ++i) {
+        std::string arg = argv[i];
+        std::string delimiter = ",";
+        if ((arg == "-h") || (arg == "--help")) {
+            show_usage(argv[0]);
+            return 0;
+        } else if ((arg == "-x0") || (arg == "--initialx")) {
+            std::istringstream iss(argv[++i]);
+            while(std::getline(iss, arg, ',')) {
+                x0.push_back(std::stod(arg));
+            }
+        } else if ((arg == "-p0") || (arg == "--initialp")) {
+            p0 = std::stod(argv[++i]);
+        } else {
+            std::cerr << "Unkown option " << arg << std::endl;
+            show_usage(argv[0]);
+        }
+    }
+    Function f;
+    std::vector<double> x_opt = external_penalty(x0, p0, f, gradient);
+    std::cout << "x_opt = " << x_opt << std::endl;
+    std::cout << "f(x_opt) = " << f.evaluate(x_opt, p0) << std::endl;
     return 0;
 }
 
