@@ -185,13 +185,16 @@ bool solution_has_converged(double sol1, double sol2, double tol=1e-5) {
 std::vector<double> gradient(std::vector<double> x, double p, Function& f) {
     int it_count = 0;
     std::vector<double> gradf = f.evaluateFirstDerivative(x, p);
+    std::vector<double> x_;
     while (!gradient_has_converged(gradf)) {
         std::vector<double> d = -f.evaluateFirstDerivative(x, p);
         double t = armijo(x, d, 0.8, 0.25, p, f);
+        x_ = x;
         x += d * t;
         gradf = f.evaluateFirstDerivative(x, p);
         it_count++;
     }
+    std::cout << "error = " << f.evaluate(x, p) - f.evaluate(x_, p) << std::endl;
     std::cout << "GRADIENT iterarions = " << it_count << std::endl;
     return x;
 }
@@ -228,6 +231,7 @@ std::vector<double> quase_newton(std::vector<double> x, double p, Function& f) {
         hk = bfgs.method(hk, x, x_, gradf, gradf_);
         it_count++;
     }
+    std::cout << "error = " << f.evaluate(x, p) - f.evaluate(x_, p) << std::endl;
     std::cout << "QUASE NEWTON iterarions = " << it_count << std::endl;
     return x;
 }
@@ -262,7 +266,7 @@ static void show_usage(std::string name) {
 }
 
 int main(int argc, const char* argv[]) {
-    // std::cout.precision(50);
+    std::cout.precision(10);
 
     if (argc < 2) {
         show_usage(argv[0]);
