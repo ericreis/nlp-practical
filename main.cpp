@@ -221,8 +221,8 @@ std::vector<double> quase_newton(std::vector<double> x, double p, Function& f) {
         // std::cout << std::endl;
         gradf_ = gradf;
         gradf = f.evaluateFirstDerivative(x, p);
-        if (x - x_ == 0 || gradf - gradf_ == 0) {
-            std::cout << "BFGS pk or qk == 0" << std::endl;
+        if ((x - x_) * (gradf - gradf_) == 0) {
+            std::cout << "BFGS denominator == 0" << std::endl;
             std::cout << "x = " << x <<std::endl;
             std::cout << "delta_x = " << x - x_ <<std::endl;
             std::cout << "delta_gradf = " << gradf - gradf_ <<std::endl;
